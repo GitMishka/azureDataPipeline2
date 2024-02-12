@@ -2,17 +2,19 @@ import os
 from azure.storage.blob import BlockBlobService
 import config
 
+
 account_name = config.account_name
 account_key = config.account_key
 
 blob_service = BlockBlobService(account_name=account_name, account_key=account_key)
 
 
-container_name = "<your_container_name>"
+container_name = "testcontainer"
 
-local_dir = "C:\Users\Misha\Desktop\GitHub\azureDataPipeline2"
+local_dir = r"C:\Users\Misha\Desktop\GitHub\azureDataPipeline2"
 
-blobs_to_download = ["blob1.txt", "blob2.csv"]  
+
+blobs_to_download = ["sample.csv"]  
 
 def download_blobs(blob_service, container_name, local_dir, blobs_to_download=None):
 

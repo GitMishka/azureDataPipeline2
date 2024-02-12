@@ -1,31 +1,33 @@
+from azure.storage.blob import BlobServiceClient, BlobClient
 import os
-from azure.storage.blob import BlockBlobService
 import config
 
+# Retrieve storage account information from config module
+connection_string = config.connection_string
 
-account_name = config.account_name
-account_key = config.account_key
-
-blob_service = BlockBlobService(account_name=account_name, account_key=account_key)
-
+# Initialize the BlobServiceClient
+blob_service_client = BlobServiceClient.from_connection_string(connection_string)
 
 container_name = "testcontainer"
-
 local_dir = r"C:\Users\Misha\Desktop\GitHub\azureDataPipeline2"
+blobs_to_download = ["sample.csv"]
 
-
-blobs_to_download = ["sample.csv"]  
-
-def download_blobs(blob_service, container_name, local_dir, blobs_to_download=None):
-
+def download_blobs(blob_service_client, container_name, local_dir, blobs_to_download=None):
     os.makedirs(local_dir, exist_ok=True)
 
+    container_client = blob_service_client.get_container_client(container_name)
+
     if not blobs_to_download:
-        blobs_to_download = [blob.name for blob in blob_service.list_blobs(container_name)]
+        # List all blobs in the container if no specific blobs are provided
+        blobs_to_download = [blob.name for blob in container_client.list_blobs()]
 
     for blob_name in blobs_to_download:
         download_path = os.path.join(local_dir, blob_name)
         print(f"Downloading blob: {blob_name}")
-        blob_service.get_blob_to_path(container_name, blob_name, download_path)
 
-download_blobs(blob_service, container_name, local_dir, blobs_to_download)
+        blob_client = container_client.get_blob_client(blob_name)
+        with open(download_path, "wb") as download_file:
+            download_file.write(blob_client.download_blob().readall())
+
+# Call the function to start downloading blobs
+download_blobs(blob_service_client, container_name, local_dir, blobs_to_download)

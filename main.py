@@ -1,9 +1,9 @@
 import os
 from azure.storage.blob import BlockBlobService
+import config
 
-
-account_name = "<your_storage_account_name>"
-account_key = "<your_storage_account_access_key>"
+account_name = config.account_name
+account_key = config.account_key
 
 blob_service = BlockBlobService(account_name=account_name, account_key=account_key)
 
